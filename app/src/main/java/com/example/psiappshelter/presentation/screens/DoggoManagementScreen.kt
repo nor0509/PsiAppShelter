@@ -39,7 +39,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.psiappshelter.ui.theme.PinkLight
 import com.example.psiappshelter.ui.theme.PurpleGrey40
 import com.example.psiappshelter.ui.theme.PurpleGrey80
 
@@ -208,57 +207,34 @@ fun DoggoManagementScreen(
                 verticalArrangement = Arrangement.Top
 
             ) {
-                if (!doggoSearch) {
-                    items(
+
+                items(
+                    if (!doggoSearch) {
                         doggoList.sortedBy { !it.isFavorite }
-
-                    ) { doggo ->
-                        DoggoCard(
-                            doggo = doggo,
-                            onFavoriteClick = {
-                                doggoViewModel.toggleFavorite(doggo)
-                            },
-                            onDeleteClick = {
-                                doggoViewModel.removeDoggo(doggo)
-                            },
-                            onCardClick = {
-                                onDoggoClick(doggo.id)
-                            }
-                        )
-                        HorizontalDivider(
-                            modifier = Modifier
-                                .padding(start = 14.dp, end = 24.dp),
-                            color = PurpleGrey40.copy(alpha = 0.3f),
-                            thickness = 2.dp
-                        )
                     }
-                }
-                else {
-
-                    items(
-                        doggoList.filter { it.name.startsWith(doggoName) },
-                    ) { doggo ->
-                        DoggoCard(
-                            doggo = doggo,
-                            onFavoriteClick = {
-                                doggoViewModel.toggleFavorite(doggo)
-                            },
-                            onDeleteClick = {
-                                doggoViewModel.removeDoggo(doggo)
-                            },
-                            onCardClick = {
-                                onDoggoClick(doggo.id)
-                            }
-                        )
-                        HorizontalDivider(
-                            modifier = Modifier
-                                .size(4.dp),
-                            color = PinkLight,
-                            thickness = 1.dp
-                        )
+                    else {
+                        doggoList.filter { it.name.startsWith(doggoName) }
                     }
+                ) { doggo ->
+                    DoggoCard(
+                        doggo = doggo,
+                        onFavoriteClick = {
+                            doggoViewModel.toggleFavorite(doggo)
+                        },
+                        onDeleteClick = {
+                            doggoViewModel.removeDoggo(doggo)
+                        },
+                        onCardClick = {
+                            onDoggoClick(doggo.id)
+                        }
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .padding(start = 14.dp, end = 24.dp),
+                        color = PurpleGrey40.copy(alpha = 0.3f),
+                        thickness = 2.dp
+                    )
                 }
-
             }
         }
 
