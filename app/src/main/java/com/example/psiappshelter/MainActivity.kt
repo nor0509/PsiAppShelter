@@ -4,23 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.psiappshelter.presentation.screens.SettingsScreen
+import com.example.psiappshelter.presentation.screens.DoggoDetailsScreen
 import com.example.psiappshelter.presentation.screens.DoggoManagementScreen
-import java.util.UUID
+import com.example.psiappshelter.presentation.screens.DoggoViewModel
+import com.example.psiappshelter.presentation.screens.ProfileScreen
+import com.example.psiappshelter.presentation.screens.SettingsScreen
 
-data class Doggo(
-    val id: String = UUID.randomUUID().toString(),
-    val name: String,
-    val breed: String,
-    val age: Int,
-    var isFavorite: Boolean
-)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +25,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 val navigationController = rememberNavController()
+                val doggoViewModel: DoggoViewModel = viewModel()
                 NavHost(
                     navController = navigationController,
                     startDestination = "doggo_management"
@@ -40,18 +37,31 @@ class MainActivity : ComponentActivity() {
                             },
                             onSettingsClick = {
                                 navigationController.navigate("settings")
-                            }
+                            },
+                            onProfileClick = {
+                                navigationController.navigate("profile")
+                            },
+                            doggoViewModel = doggoViewModel
+
                         )
+                    }
+
+                    composable("settings") {
+                        SettingsScreen(navController = navigationController)
+                    }
+                    composable("profile") {
+                        ProfileScreen(navController = navigationController)
                     }
                     composable(
                         route = "doggo_details/{doggoId}",
                         arguments = listOf(navArgument("doggoId") { type = NavType.StringType })
                     ) { backStackEntry ->
-                        val doggoId = backStackEntry.arguments?.getString("doggoId") ?: ""
-                        DoggoDetailsScreen(doggoId)
-                    }
-                    composable("settings") {
-                        SettingsScreen()
+                        val doggoId = backStackEntry.arguments?.getString("doggoId")
+                        DoggoDetailsScreen(
+                            navController = navigationController,
+                            doggoId = doggoId,
+                            doggoViewModel = doggoViewModel
+                        )
                     }
                 }
             }
