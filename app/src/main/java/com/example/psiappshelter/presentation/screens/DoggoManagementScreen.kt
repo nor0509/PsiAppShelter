@@ -1,29 +1,16 @@
 package com.example.psiappshelter.presentation.screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -33,13 +20,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.psiappshelter.ui.theme.PurpleGrey40
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.psiappshelter.ui.theme.PurpleGrey80
 
 
@@ -99,159 +82,46 @@ fun DoggoManagementScreen(
                 .padding(innerPadding)
                 .fillMaxSize(),
         ) {
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .padding(start = 16.dp, end = 16.dp),
-                verticalAlignment = Alignment.Bottom,
-            ) {
-                OutlinedTextField(
-                    value = doggoName,
-                    onValueChange = {
-                        doggoName = it
-                        doggoSearch = false
-                    },
-                    label = { Text("Poszukaj lub dodaj pieska \uD83D\uDC15") },
-                    singleLine = true,
-                    modifier = Modifier
-                        .weight(2f),
-                    isError = doggoExists
-                )
-
-                Row(
-                    modifier = Modifier
-                        .weight(0.8f),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    IconButton(
-                        modifier = Modifier.size(34.dp),
-                        onClick = {
-                            if (doggoList.isNotEmpty()) {
-                                doggoSearch = true
-                            }
-                        },
-                        enabled = doggoName.isNotEmpty()
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(34.dp),
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Wyszukaj pieska"
-                        )
+            DoggoSearchBar(
+                doggoName = doggoName,
+                onDoggoNameChange = {
+                    doggoName = it
+                    doggoSearch = false
+                    doggoExists = false
+                },
+                onSearchClick = {
+                    if (doggoList.isNotEmpty()) {
+                        doggoSearch = true
                     }
-                    Spacer(modifier = Modifier.size(14.dp))
-                    IconButton(
-                        onClick = {
-                            if (doggoList.none{it.name == doggoName} ) {
-                                tempDoggoName = doggoName
-                                showAddDialog = true
-                                doggoName = ""
-                            }
-                            else {
-                                doggoExists = true
-                            }
-                        },
-                        modifier = Modifier.size(34.dp),
-                        enabled = doggoName.isNotEmpty()
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(34.dp),
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Dodaj pieska",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                },
+                onAddClick = {
+                    if (doggoList.none { it.name == doggoName }) {
+                        tempDoggoName = doggoName
+                        showAddDialog = true
+                        doggoName = ""
+                    } else {
+                        doggoExists = true
                     }
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .padding(start = 16.dp)
-                    .height(30.dp)
-            ){
-                if (doggoExists){
-                    Text(
-                        "Piesek o takim imieniu znajduje się już na liście!",
-                        fontSize = 10.sp,
-                        color = Color.Red)
-                }
-                else{
-                    Spacer(modifier = Modifier)
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("\uD83D\uDC36: ${doggoList.size}")
-
-                if (doggoList.any { it.isFavorite }) {
-                    Icon(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .padding(start = 6.dp),
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = "Dodaj pieska",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-
-                    Text(": ${doggoList.filter{ it.isFavorite }.size}")
-                }
-            }
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(4.dp),
-                verticalArrangement = Arrangement.Top
-
-            ) {
-
-                items(
-                    if (!doggoSearch) {
-                        doggoList.sortedBy { !it.isFavorite }
-                    }
-                    else {
-                        doggoList.filter { it.name.startsWith(doggoName) }
-                    }
-                ) { doggo ->
-                    DoggoCard(
-                        doggo = doggo,
-                        onFavoriteClick = {
-                            doggoViewModel.toggleFavorite(doggo)
-                        },
-                        onDeleteClick = {
-                            doggoViewModel.removeDoggo(doggo)
-                        },
-                        onCardClick = {
-                            onDoggoClick(doggo.id)
-                        }
-                    )
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .padding(start = 14.dp, end = 24.dp),
-                        color = PurpleGrey40.copy(alpha = 0.3f),
-                        thickness = 2.dp
-                    )
-                }
-            }
+                },
+                doggoExists = doggoExists
+            )
+            DoggoCounter(doggoList)
+            DoggoList(
+                doggoList = doggoList,
+                filterQuery = doggoName,
+                onFavoriteClick = { doggoViewModel.toggleFavorite(it) },
+                onDeleteClick = { doggoViewModel.removeDoggo(it) },
+                onCardClick = onDoggoClick,
+                doggoSearch = doggoSearch
+            )
         }
 
 
         if (showAddDialog) {
-            doggoExists = false
             AddDoggoDialog(
                 doggoName = tempDoggoName,
                 onAddDoggo = { breed, age ->
-                    doggoList.add(
-                        Doggo(
-                            name = tempDoggoName,
-                            breed = breed,
-                            age = age,
-                            isFavorite = false
-                        )
-                    )
+                    doggoViewModel.addDoggo(tempDoggoName, breed, age)
                     showAddDialog = false
                 },
                 onDismiss = { showAddDialog = false }
@@ -260,3 +130,16 @@ fun DoggoManagementScreen(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun DoggoManagementScreenPreview() {
+    val doggoViewModel = DoggoViewModel()
+    MaterialTheme {
+        DoggoManagementScreen(
+            onSettingsClick = {},
+            onProfileClick = {},
+            onDoggoClick = {},
+            doggoViewModel = doggoViewModel
+        )
+    }
+}

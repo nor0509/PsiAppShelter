@@ -19,8 +19,15 @@ class DoggoViewModel : ViewModel() {
         Doggo(name = "Charlie", breed = "Beagle", age = 4, isFavorite = true)
     )
 
-    fun addDoggo(doggo: Doggo) {
-        doggoList.add(doggo)
+    fun addDoggo(name: String, breed: String, age: Int) {
+        doggoList.add(
+            Doggo(
+                name = name,
+                breed = breed,
+                age = age,
+                isFavorite = false
+            )
+        )
     }
 
     fun removeDoggo(doggo: Doggo) {

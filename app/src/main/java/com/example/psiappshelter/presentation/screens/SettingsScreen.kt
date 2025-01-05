@@ -17,8 +17,10 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.psiappshelter.ui.theme.PurpleGrey80
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,10 +65,11 @@ fun SettingsScreen(navController: NavController) {
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun SettingsScreenPreview() {
-//    MaterialTheme {
-//        SettingsScreen()
-//    }
-//}
+@Preview(showBackground = true)
+@Composable
+fun SettingsScreenPreview() {
+    val navController = rememberNavController()
+    MaterialTheme {
+        SettingsScreen(navController = navController)
+    }
+}

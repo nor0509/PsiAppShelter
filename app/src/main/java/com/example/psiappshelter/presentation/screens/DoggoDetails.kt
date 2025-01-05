@@ -142,15 +142,7 @@ fun DoggoDetailsScreen(
 fun DoggoDetailsScreenPreview() {
     val navController = rememberNavController()
 
-    val doggoViewModel = DoggoViewModel().apply {
-        doggoList.addAll(
-            listOf(
-                Doggo(name = "Rex", breed = "German Shepherd", age = 3, isFavorite = true),
-                Doggo(name = "Bella", breed = "Labrador", age = 2, isFavorite = false),
-                Doggo(name = "Charlie", breed = "Beagle", age = 4, isFavorite = true)
-            )
-        )
-    }
+    val doggoViewModel = DoggoViewModel().apply{}
 
     val exampleDoggoId = doggoViewModel.doggoList.first().id
 

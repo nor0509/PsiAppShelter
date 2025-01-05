@@ -95,7 +95,6 @@ fun ProfileScreen(navController: NavController){
 @Preview(showBackground = true)
 @Composable
 fun PreviewProfileScreen(){
-    val navigationController = rememberNavController()
     MaterialTheme {
         ProfileScreen(rememberNavController())
     }
