@@ -1,5 +1,6 @@
-package com.example.psiappshelter.presentation.screens
+package com.example.psiappshelter.ui.screens.doggomanagement
 
+import ImageLoader
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,49 +21,52 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.psiappshelter.R
 import com.example.psiappshelter.ui.theme.GradientPurple
 import com.example.psiappshelter.ui.theme.PurpleGrey80
+import com.example.psiappshelter.viewmodel.DogViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DoggoDetailsScreen(
+fun DogDetailsScreen(
     navController: NavController,
-    doggoId: String?,
-    doggoViewModel: DoggoViewModel
+    dogId: String?,
+    dogViewModel: DogViewModel = hiltViewModel()
 ) {
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    val doggo = doggoViewModel.doggoList.find { it.id == doggoId }
 
+
+    val dogsList = dogViewModel.dogs.collectAsState(initial = emptyList()).value
+
+
+    val dog = dogsList.find { it.uid.toString() == dogId }
+
+    if (dog == null) {
+        return
+    }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CenterAlignedTopAppBar(
-
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = (PurpleGrey80.copy(alpha = 0.15f)),
+                    containerColor = PurpleGrey80.copy(alpha = 0.15f),
                 ),
-                title = {
-                    Text("Detale")
-                },
+                title = { Text("Detale") },
                 navigationIcon = {
-                    IconButton(
-                        onClick = {navController.popBackStack()}
-                    ){
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Cofnij"
@@ -72,17 +76,13 @@ fun DoggoDetailsScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            if (doggo != null) {
-                                doggoViewModel.removeDoggo(doggo)
-                                navController.popBackStack()
-                            }
+                            dogViewModel.removeDog(dog)
+                            navController.popBackStack()
                         }
-                    ){
+                    ) {
                         Icon(
-                            painter = painterResource(
-                                id = R.drawable.delete_icon
-                            ),
-                            contentDescription = "Favorite",
+                            painter = painterResource(id = R.drawable.delete_icon),
+                            contentDescription = "Delete",
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -109,49 +109,27 @@ fun DoggoDetailsScreen(
                         shape = RoundedCornerShape(6.dp)
                     ),
                 contentAlignment = Alignment.Center
-            ){
-                Text(
-                    text = "\uD83D\uDC15",
-                    fontSize = 20.sp
-                )
+            ) {
+                ImageLoader(profileImageUrl = dog.profileImageUrl)
             }
             Spacer(modifier = Modifier.size(40.dp))
-            if (doggo != null) {
-                Text(
-                    text = doggo.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            Text(
+                text = dog.name,
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                fontWeight = FontWeight.Bold
+            )
             Spacer(modifier = Modifier.size(10.dp))
-            if (doggo != null) {
-                Text(
-                    text = "${doggo.breed}, ${doggo.age} years old",
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 1,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
-            }
+            Text(
+                text = "${dog.breed}, ${dog.age} years old",
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            )
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DoggoDetailsScreenPreview() {
-    val navController = rememberNavController()
 
-    val doggoViewModel = DoggoViewModel().apply{}
 
-    val exampleDoggoId = doggoViewModel.doggoList.first().id
-
-    MaterialTheme {
-        DoggoDetailsScreen(
-            navController = navController,
-            doggoId = exampleDoggoId,
-            doggoViewModel = doggoViewModel
-        )
-    }
-}
 

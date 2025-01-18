@@ -1,4 +1,4 @@
-package com.example.psiappshelter.presentation.screens
+package com.example.psiappshelter.ui.components.doggomanagement
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,22 +9,27 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.psiappshelter.data.local.entity.DogEntity
 import com.example.psiappshelter.ui.theme.PurpleGrey40
 
 @Composable
-fun DoggoList(
-    doggoList: List<Doggo>,
+fun DoggoListScreen(
+    doggoList: List<DogEntity>,
     filterQuery: String,
-    onFavoriteClick: (Doggo) -> Unit,
-    onDeleteClick: (Doggo) -> Unit,
+    onFavoriteClick: (DogEntity) -> Unit,
+    onDeleteClick: (DogEntity) -> Unit,
     onCardClick: (String) -> Unit,
     doggoSearch: Boolean
 ) {
-    val filteredDoggoList = if (!doggoSearch) {
-        doggoList.sortedBy { !it.isFavorite }
-    } else {
+
+    val listToDisplay = if (doggoSearch) {
+
         doggoList.filter { it.name.startsWith(filterQuery, ignoreCase = true) }
+    } else {
+
+        doggoList.sortedBy { !it.isFav }
     }
+
 
     LazyColumn(
         modifier = Modifier
@@ -32,12 +37,14 @@ fun DoggoList(
             .padding(4.dp),
         verticalArrangement = Arrangement.Top
     ) {
-        items(filteredDoggoList) { doggo ->
+        items(listToDisplay) { doggo ->
+
             DoggoCard(
                 doggo = doggo,
                 onFavoriteClick = { onFavoriteClick(doggo) },
                 onDeleteClick = { onDeleteClick(doggo) },
-                onCardClick = { onCardClick(doggo.id) }
+                onCardClick = { onCardClick(doggo.uid.toString()) },
+                modifier = Modifier,
             )
             HorizontalDivider(
                 modifier = Modifier.padding(start = 14.dp, end = 24.dp),

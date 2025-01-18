@@ -7,11 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.psiappshelter.presentation.screens.NavigationGraph
-import com.example.psiappshelter.presentation.screens.DoggoViewModel
+import com.example.psiappshelter.navigation.NavigationGraph
+import com.example.psiappshelter.viewmodel.DogViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,9 +20,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 val navController = rememberNavController()
-                val doggoViewModel: DoggoViewModel = viewModel()
+                val doggoViewModel: DogViewModel = viewModel()
                 NavigationGraph(navController = navController, doggoViewModel = doggoViewModel)
             }
+
         }
 
     }

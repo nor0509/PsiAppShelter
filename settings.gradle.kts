@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "PsiAppShelter"
 include(":app")
- 
+
